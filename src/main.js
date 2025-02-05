@@ -1,6 +1,6 @@
 // Maddison Lobo
 // ENDLESS RUNNER
-// _ hours
+// 2 hours
 
 // creative tilt justification
     // 
@@ -8,7 +8,9 @@
 // make screen size & add scenes
 let config = {
     type: Phaser.AUTO,
-    scene: [ Menu ],
+    width: 1280,
+    height: 960,
+    scene: [ Menu, Play ],
 }
 
 // make game!
@@ -19,4 +21,4 @@ let borderUISize = game.config.height / 15
 let borderPadding = borderUISize / 3
 
 // reserve keyboard bindings
-let keyUP, keyDOWN
+let keyUP, keyLEFT, keyRIGHT
