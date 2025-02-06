@@ -8,7 +8,7 @@ class Play extends Phaser.Scene {
         this.underwater = this.add.tileSprite(0, 0, game.config.width, game.config.height, 'underwater').setOrigin(0, 0)
 
         // jellyfish & infinite animation
-        this.swim = this.add.sprite(game.config.width / 2.6, game.config.height - game.config.height / 3, 'jellyfish!').setOrigin(0,0)
+        this.swim = this.add.sprite(game.config.width / 2 - 130, game.config.height - game.config.height / 3, 'jellyfish!').setOrigin(0,0)
         this.swim.anims.play('jellyfish!')              // play jellyfish animation
 
         // bind movement keys
@@ -27,11 +27,30 @@ class Play extends Phaser.Scene {
             padding: {top: 5, bottom: 5},
         }
         // restart and menu option
-        this.add.text(game.config.width / 2 - 230, game.config.height - 50, 'press R to restart || press M for menu', playConfig).setOrigin(0,0)
+        this.add.text(game.config.width / 2 - 200, game.config.height - 50, 'press R to restart || press M for menu', playConfig).setOrigin(0,0)
+        
+        playConfig.fontSize = '70px'
+        // timer
+        this.timer = this.add.text(game.config.width / 20 - 50, game.config.height / 20 - 50, '0', playConfig).setOrigin(0,0)
 
         // bind restart and menu keys
         keyRESTART = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R)
         keyMENU = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M)
+
+        // create plastic1 animation
+        this.anims.create({
+            key: 'plastic1',
+            frames: this.anims.generateFrameNumbers('plastic1', { start: 0, end: 3, first: 0}),
+            frameRate: 2,
+            repeat: -1,
+        })
+        // create plasticBag animation
+        this.anims.create({
+            key: 'plasticBag',
+            frames: this.anims.generateFrameNumbers('plasticBag', { start: 0, end: 1, first: 0}),
+            frameRate: 2,
+            repeat: -1,
+        })
 
     }  
 
@@ -54,6 +73,15 @@ class Play extends Phaser.Scene {
         // M key for menu
         if(Phaser.Input.Keyboard.JustDown(keyMENU)) {
             this.scene.start('menuScene')
+        }
+
+        if(false) {
+            // load sprites
+            this.plastic1 = this.add.sprite(game.config.width / 2, game.config.height / 2, 'plastic1').setOrigin(0,0)
+            this.plastic1.anims.play('plastic1') 
+
+            this.plasticBag = this.add.sprite(game.config.width / 2, game.config.height / 2, 'plasticBag').setOrigin(0,0)
+            this.plasticBag.anims.play('plasticBag')
         }
     }
 
