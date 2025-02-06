@@ -1,6 +1,6 @@
 // Maddison Lobo
 // ENDLESS RUNNER
-// 2 hours
+// 5 hours
 
 // creative tilt justification
     // 
@@ -10,7 +10,7 @@ let config = {
     type: Phaser.AUTO,
     width: 1280,
     height: 960,
-    scene: [ Menu, Play ],
+    scene: [ Menu, Play, Credits ],
 }
 
 // make game!
@@ -21,4 +21,4 @@ let borderUISize = game.config.height / 15
 let borderPadding = borderUISize / 3
 
 // reserve keyboard bindings
-let keyUP, keyLEFT, keyRIGHT, keyRESTART, keyMENU
+let keyUP, keyLEFT, keyRIGHT, keyRESTART, keyMENU, keyCREDITS
