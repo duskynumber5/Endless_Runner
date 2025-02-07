@@ -15,7 +15,7 @@ class Play extends Phaser.Scene {
         keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT)
         keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT)
 
-        // set move speed
+        // set move speed && moveable variable
         this.moveSpeed = 7
 
         // config scene text
@@ -34,7 +34,7 @@ class Play extends Phaser.Scene {
         this.timer = this.add.text(game.config.width / 2 - 25, game.config.height / 20 - 50, '0', playConfig).setOrigin(0,0)
 
         this.timeElapsed = 0
-        let timer = this.time.addEvent({
+        game.timer = this.time.addEvent({
             delay: 1000,
             callback: () => {
                 //console.log("Timer tick")
@@ -76,6 +76,13 @@ class Play extends Phaser.Scene {
             frameRate: 2,
             repeat: -1,
         })
+        // create restarting animation
+        this.anims.create({
+            key: 'restarting',
+            frames: this.anims.generateFrameNumbers('restarting', { start: 0, end: 2, first: 0}),
+            frameRate: 2,
+            repeat: -1,
+        })
 
     }  
 
@@ -83,18 +90,33 @@ class Play extends Phaser.Scene {
         // move background
         this.underwater.tilePositionY -= 7
 
+        
+        // R key to restart
+        if(Phaser.Input.Keyboard.JustDown(keyRESTART)) {
+            // stop timer
+            this.time.removeEvent(game.timer)
+            // indicate restarting
+            this.restarting = this.add.sprite(game.config.width / 3 - 125, game.config.height / 2 - 400 , 'restarting').setOrigin(0,0)
+            this.restarting.anims.play('restarting')
+            // pause animation & stop movement
+            this.swim.anims.stop('jellyfish!')
+            
+            // delay restart
+            let restartDelay = this.time.addEvent({
+                delay: 3000,
+                callback: () => {
+                    this.scene.restart()
+                }  
+            })
+        }
+
         // movement w/ boundaries
         if(keyLEFT.isDown && this.swim.x >= borderUISize - this.swim.width / 1.2) {
             this.swim.x -= this.moveSpeed
         } else if(keyRIGHT.isDown && this.swim.x <= game.config.width - this.swim.width / 2) {
             this.swim.x += this.moveSpeed
         }
-
-        // R key to restart
-        if(Phaser.Input.Keyboard.JustDown(keyRESTART)) {
-            this.scene.restart()
-        }
-
+        
         // M key for menu
         if(Phaser.Input.Keyboard.JustDown(keyMENU)) {
             this.scene.start('menuScene')

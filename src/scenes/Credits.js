@@ -14,7 +14,7 @@ class Credits extends Phaser.Scene {
         }   
         
         // title text
-        this.add.text(game.config.width / 2 - 200, game.config.height / 10, 'CREDITS!', creditsConfig).setOrigin(0,0)
+        this.add.text(game.config.width / 2 - 190, game.config.height / 10, 'CREDITS!', creditsConfig).setOrigin(0,0)
 
         // change titles text size
         creditsConfig.fontSize = '25px'

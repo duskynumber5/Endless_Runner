@@ -25,6 +25,13 @@ class Menu extends Phaser.Scene {
             startFrame: 0,
             endFrame: 1,
         })
+        // load restarting
+        this.load.spritesheet('restarting', './assets/restarting.png', {
+            frameWidth: 732,
+            frameHeight: 732,
+            startFrame: 0,
+            endFrame: 2,
+        })
         // load background
         this.load.image('underwater', './assets/underwater.png')
     }
