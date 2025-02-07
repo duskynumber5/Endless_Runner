@@ -31,7 +31,32 @@ class Play extends Phaser.Scene {
         
         playConfig.fontSize = '70px'
         // timer
-        this.timer = this.add.text(game.config.width / 20 - 50, game.config.height / 20 - 50, '0', playConfig).setOrigin(0,0)
+        this.timer = this.add.text(game.config.width / 2 - 25, game.config.height / 20 - 50, '0', playConfig).setOrigin(0,0)
+
+        this.timeElapsed = 0
+        let timer = this.time.addEvent({
+            delay: 1000,
+            callback: () => {
+                //console.log("Timer tick")
+                this.timeElapsed++
+                this.timer.setText(this.timeElapsed)
+
+                // implement if collision max reached == game over
+                if(game.timeRemaining <= -1) {
+                    this.time.removeEvent(timer)
+                    this.timeRight.text = 0
+                    // game over scene
+                    if (!this.gameOver) {
+                        scoreConfig.fixedWidth = 0
+                        this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', gameOverConfig).setOrigin(0.5)
+                        this.add.text(game.config.width/2, game.config.height/2 + 64, 'Press (R) to Restart or ← for Menu', gameOverConfig).setOrigin(0.5) 
+                        this.gameOver = true
+                    }
+                }
+            },
+            callbackScope: this,
+            loop: true
+        })
 
         // bind restart and menu keys
         keyRESTART = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R)
