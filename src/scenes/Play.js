@@ -4,19 +4,9 @@ class Play extends Phaser.Scene {
     }
 
     create () {
+// ----------------------------------- TEXT & BG ----------------------------------- //
         // background
         this.underwater = this.add.tileSprite(0, 0, game.config.width, game.config.height, 'underwater').setOrigin(0, 0)
-
-        // jellyfish & infinite animation
-        this.swim = this.add.sprite(game.config.width / 2 - 130, game.config.height - game.config.height / 3, 'jellyfish!').setOrigin(0,0)
-        this.swim.anims.play('jellyfish!')              // play jellyfish animation
-
-        // bind movement keys
-        keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT)
-        keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT)
-
-        // set move speed && moveable variable
-        this.moveSpeed = 7
 
         // config scene text
         let playConfig = {
@@ -28,11 +18,12 @@ class Play extends Phaser.Scene {
         }
         // restart and menu option
         this.add.text(game.config.width / 2 - 200, game.config.height - 50, 'press R to restart || press M for menu', playConfig).setOrigin(0,0)
+// --------------------------------------------------------------------------------- //
         
+// ------------------------------------- TIMER ------------------------------------- //
+        // timer text
         playConfig.fontSize = '70px'
-        // timer
         this.timer = this.add.text(game.config.width / 2 - 25, game.config.height / 20 - 50, '0', playConfig).setOrigin(0,0)
-
         this.timeElapsed = 0
         game.timer = this.time.addEvent({
             delay: 1000,
@@ -57,10 +48,19 @@ class Play extends Phaser.Scene {
             callbackScope: this,
             loop: true
         })
+// --------------------------------------------------------------------------------- //
 
-        // bind restart and menu keys
-        keyRESTART = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R)
-        keyMENU = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M)
+// ------------------------------ ANIMATION & SPRITES ------------------------------ //
+        // create animation
+        this.anims.create({
+            key: 'jellyfish!',
+            frames: this.anims.generateFrameNumbers('jellyfish!', { start: 0, end: 2, first: 0}),
+            frameRate: 3,
+            repeat: -1,
+        })
+        // jellyfish & infinite animation
+        this.jellyfish = new Jellyfish(this, game.config.width / 2 - 125, game.config.height - game.config.height / 3, 'jellyfish!').setOrigin(0,0)
+        this.jellyfish.anims.play('jellyfish!')
 
         // create plastic1 animation
         this.anims.create({
@@ -69,6 +69,7 @@ class Play extends Phaser.Scene {
             frameRate: 2,
             repeat: -1,
         })
+
         // create plasticBag animation
         this.anims.create({
             key: 'plasticBag',
@@ -76,6 +77,7 @@ class Play extends Phaser.Scene {
             frameRate: 2,
             repeat: -1,
         })
+
         // create restarting animation
         this.anims.create({
             key: 'restarting',
@@ -83,14 +85,79 @@ class Play extends Phaser.Scene {
             frameRate: 2,
             repeat: -1,
         })
+// --------------------------------------------------------------------------------- //
 
+// ----------------------------------- KEY BINDS ----------------------------------- //
+        // bind restart and menu keys
+        keyRESTART = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R)
+        keyMENU = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M)
+        // bind movement keys
+        keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT)
+        keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT)
+// --------------------------------------------------------------------------------- //
+
+// ----------------------------------- RANDOM GEN ----------------------------------- //
+        // group to manage obstacles
+        this.obstaclesGroup = this.physics.add.group()
+
+        // timer
+        this.time.addEvent({
+            delay: 2000,
+            callback: () => {
+                let texture = ''
+
+                switch(Phaser.Math.Between(1, 2)) {
+                    case 1:
+                        console.log('case 1')
+                        texture = 'plastic1' 
+                        break
+                    case 2:
+                        console.log('case 2')
+                        texture = 'plasticBag'
+                        break
+                    default:
+                        console.log('flop')
+                        break
+                }
+
+                // create obstacles
+                game.obstacle_ = this.physics.add.sprite(Phaser.Math.Between(-1, game.config.width), 0, texture)
+                //game.obstacle_.anims.play(this.texture)
+
+                // velocity
+                game.obstacle_.setVelocityY(100)
+                this.obstaclesGroup.add(game.obstacle_)
+            },
+            callbackScope: this,
+            loop: true
+        })
+
+        game.obstacle_ = this.add.sprite(game.config.width, game.config.height, this.texture)
+// ---------------------------------------------------------------------------------- //
+
+        // game active
+        this.gameOver = false
     }  
 
     update() {
+        // continue until game over
+        if(!this.gameOver) {
+            this.jellyfish.update()
+        }
+
+// ---------------------------------- MOVE THINGS ---------------------------------- //
         // move background
         this.underwater.tilePositionY -= 7
-
+        //game.obstacle_.y += 4.5
+        // Move each obstacle and remove it if off-screen
+        this.obstaclesGroup.getChildren().forEach((obstacle) => {
+            if (obstacle.y > this.game.config.height) {
+                this.obstaclesGroup.remove(obstacle, true, true); // Remove from group and destroy
+            }
+        })
+// --------------------------------------------------------------------------------- //
         
+// ----------------------------------- KEY BINDS ----------------------------------- //
         // R key to restart
         if(Phaser.Input.Keyboard.JustDown(keyRESTART)) {
             // stop timer
@@ -98,9 +165,6 @@ class Play extends Phaser.Scene {
             // indicate restarting
             this.restarting = this.add.sprite(game.config.width / 3 - 125, game.config.height / 2 - 400 , 'restarting').setOrigin(0,0)
             this.restarting.anims.play('restarting')
-            // pause animation & stop movement
-            this.swim.anims.stop('jellyfish!')
-            
             // delay restart
             let restartDelay = this.time.addEvent({
                 delay: 3000,
@@ -109,27 +173,20 @@ class Play extends Phaser.Scene {
                 }  
             })
         }
-
-        // movement w/ boundaries
-        if(keyLEFT.isDown && this.swim.x >= borderUISize - this.swim.width / 1.2) {
-            this.swim.x -= this.moveSpeed
-        } else if(keyRIGHT.isDown && this.swim.x <= game.config.width - this.swim.width / 2) {
-            this.swim.x += this.moveSpeed
-        }
         
         // M key for menu
         if(Phaser.Input.Keyboard.JustDown(keyMENU)) {
             this.scene.start('menuScene')
         }
+// --------------------------------------------------------------------------------- //
 
-        if(false) {
-            // load sprites
-            this.plastic1 = this.add.sprite(game.config.width / 2, game.config.height / 2, 'plastic1').setOrigin(0,0)
-            this.plastic1.anims.play('plastic1') 
-
-            this.plasticBag = this.add.sprite(game.config.width / 2, game.config.height / 2, 'plasticBag').setOrigin(0,0)
-            this.plasticBag.anims.play('plasticBag')
-        }
+/*
+        // collision
+        this.physics.add.collider(this.player, this.obstaclesGroup, (player, obstacle) => {
+            console.log('Collision detected!');
+            obstacle.destroy(); // Destroy the obstacle upon collision
+        });
+*/
     }
 
 }

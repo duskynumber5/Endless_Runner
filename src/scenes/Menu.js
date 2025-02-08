@@ -37,10 +37,13 @@ class Menu extends Phaser.Scene {
     }
 
     create() {
+// ------------------------------------- DECOR ------------------------------------- //
         // decor lol
         this.add.rectangle(0, 0, game.config.width, game.config.height, 0x318bc0).setOrigin(0, 0)
         this.add.rectangle(0, borderUISize + borderPadding * 2, game.config.width, borderUISize, 0xFFFFFF).setOrigin(0, 0)
+// --------------------------------------------------------------------------------- //
 
+// --------------------------------- TEXT & CONFIG --------------------------------- //
         // menu text config
         let menuConfig = {
             fontFamily: 'Gill Sans',
@@ -50,34 +53,33 @@ class Menu extends Phaser.Scene {
             padding: {top: 5, bottom: 5},
         }
         // title text
-        this.add.text(game.config.width / 2 - 200, game.config.height / 3, 'JELLYFISH!', menuConfig).setOrigin(0,0)
+        this.add.text(game.config.width / 2 - 200, game.config.height / 4, 'JELLYFISH!', menuConfig).setOrigin(0,0)
         
         menuConfig.fontSize = '40px'
         // start text
-        this.add.text(game.config.width / 2 - 130, game.config.height / 2, 'press ↑ to start', menuConfig).setOrigin(0,0)
+        this.add.text(game.config.width / 2 - 135, game.config.height / 2.5, 'press ↑ to start', menuConfig).setOrigin(0,0)
         menuConfig.fontSize = '25px'
+        // controls text
+        this.add.text(game.config.width / 2 - 135, game.config.height / 2, 'use ←→ arrows to move', menuConfig).setOrigin(0,0)
         // credit text
-        this.add.text(game.config.width / 2 - 110, game.config.height - 50, 'press C for credits', menuConfig).setOrigin(0,0)
+        this.add.text(game.config.width / 2 - 107, game.config.height - 50, 'press C for credits', menuConfig).setOrigin(0,0)
+// --------------------------------------------------------------------------------- //
 
+// ----------------------------------- KEY BINDS ----------------------------------- //
         // bind up key
         keyUP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP)
         keyCREDITS = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C)
+// --------------------------------------------------------------------------------- //
 
-        // create animation
-        this.anims.create({
-            key: 'jellyfish!',
-            frames: this.anims.generateFrameNumbers('jellyfish!', { start: 0, end: 2, first: 0}),
-            frameRate: 3,
-            repeat: -1,
-        })
-
+// ----------------------------------- ADD SPRITE ----------------------------------- //
         // add jellyfish
-        let swim = this.add.sprite(game.config.width / 2 - 130, game.config.height - game.config.height / 3, 'jellyfish!').setOrigin(0,0)
-        //swim.anims.play('jellyfish!')              // play jellyfish animation
+        let swim = this.add.sprite(game.config.width / 2 - 125, game.config.height - game.config.height / 3, 'jellyfish!').setOrigin(0,0)
+// ---------------------------------------------------------------------------------- //
 
     }
 
     update() {
+// ----------------------------------- KEY BINDS ----------------------------------- //
         // up arrow to start game
         if (Phaser.Input.Keyboard.JustDown(keyUP)) {
             this.scene.start('playScene') 
@@ -87,5 +89,6 @@ class Menu extends Phaser.Scene {
         if (Phaser.Input.Keyboard.JustDown(keyCREDITS)) {
             this.scene.start('creditsScene') 
         }
+// ---------------------------------------------------------------------------------- //
     }
 }

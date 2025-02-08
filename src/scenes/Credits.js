@@ -18,7 +18,7 @@ class Credits extends Phaser.Scene {
 
         // change titles text size
         creditsConfig.fontSize = '25px'
-        this.add.text(game.config.width / 2 - 110, game.config.height - 50, 'press M for menu', creditsConfig).setOrigin(0,0)
+        this.add.text(game.config.width / 2 - 107, game.config.height - 50, 'press M for menu', creditsConfig).setOrigin(0,0)
 
         // bind menu key
         keyMENU = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M)
