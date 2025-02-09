@@ -63,6 +63,9 @@ class Menu extends Phaser.Scene {
         this.add.text(game.config.width / 2 - 135, game.config.height / 2, 'use ←→ arrows to move', menuConfig).setOrigin(0,0)
         // credit text
         this.add.text(game.config.width / 2 - 107, game.config.height - 50, 'press C for credits', menuConfig).setOrigin(0,0)
+        menuConfig.fontSize = '20px'
+        // lifes text
+        this.add.text(game.config.width / 2 - 70, game.config.height / 1.75, 'you have 3 lives', menuConfig).setOrigin(0,0)
 // --------------------------------------------------------------------------------- //
 
 // ----------------------------------- KEY BINDS ----------------------------------- //

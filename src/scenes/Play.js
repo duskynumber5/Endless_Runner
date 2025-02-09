@@ -18,14 +18,22 @@ class Play extends Phaser.Scene {
         }
         // restart and menu option
         this.add.text(game.config.width / 2 - 200, game.config.height - 50, 'press R to restart || press M for menu', playConfig).setOrigin(0,0)
+
+        // lives tracker
+        playConfig.fontSize = '40px'
+        this.numLives = 3
+        this.livesCount = this.add.text(game.config.width / 5 - 240, game.config.height - game.config.height + 10, 'lives: 3', playConfig).setOrigin(0,0)
 // --------------------------------------------------------------------------------- //
         
 // ------------------------------------- TIMER ------------------------------------- //
+        // initalize count
+        this.collisionCount = 0
+
         // timer text
         playConfig.fontSize = '70px'
         this.timer = this.add.text(game.config.width / 2 - 25, game.config.height / 20 - 50, '0', playConfig).setOrigin(0,0)
         this.timeElapsed = 0
-        game.timer = this.time.addEvent({
+        let timer = this.time.addEvent({
             delay: 1000,
             callback: () => {
                 //console.log("Timer tick")
@@ -33,15 +41,17 @@ class Play extends Phaser.Scene {
                 this.timer.setText(this.timeElapsed)
 
                 // implement if collision max reached == game over
-                if(game.timeRemaining <= -1) {
+                if(this.numLives <= 0) {
                     this.time.removeEvent(timer)
-                    this.timeRight.text = 0
                     // game over scene
                     if (!this.gameOver) {
-                        scoreConfig.fixedWidth = 0
-                        this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', gameOverConfig).setOrigin(0.5)
-                        this.add.text(game.config.width/2, game.config.height/2 + 64, 'Press (R) to Restart or ← for Menu', gameOverConfig).setOrigin(0.5) 
                         this.gameOver = true
+                        this.livesCount.text = 'lives: 0'
+                        playConfig.fontSize = '40px'
+                        playConfig.backgroundColor = '#141b8e'
+                        this.add.text(game.config.width/2, game.config.height/2 - 64, ' GAME OVER ', playConfig).setOrigin(0.5)
+                        this.add.text(game.config.width/2, game.config.height/2, ' press R to restart or M for menu ', playConfig).setOrigin(0.5) 
+                        game.ouch.destroy()
                     }
                 }
             },
@@ -66,15 +76,16 @@ class Play extends Phaser.Scene {
         this.anims.create({
             key: 'plastic1',
             frames: this.anims.generateFrameNumbers('plastic1', { start: 0, end: 3, first: 0}),
-            frameRate: 2,
+            frameRate: 1,
             repeat: -1,
         })
+        
 
         // create plasticBag animation
         this.anims.create({
             key: 'plasticBag',
             frames: this.anims.generateFrameNumbers('plasticBag', { start: 0, end: 1, first: 0}),
-            frameRate: 2,
+            frameRate: 1,
             repeat: -1,
         })
 
@@ -108,37 +119,46 @@ class Play extends Phaser.Scene {
 
                 switch(Phaser.Math.Between(1, 2)) {
                     case 1:
-                        console.log('case 1')
+                        //console.log('case 1')
                         texture = 'plastic1' 
                         break
                     case 2:
-                        console.log('case 2')
+                        //console.log('case 2')
                         texture = 'plasticBag'
                         break
                     default:
-                        console.log('flop')
+                        //console.log('flop')
                         break
                 }
 
                 // create obstacles
                 game.obstacle_ = this.physics.add.sprite(Phaser.Math.Between(-1, game.config.width), 0, texture)
 
+                // hitbox size
+                game.obstacle_.setSize(150, 150)
 
-                if (texture = 'plastic1') {
-                    game.obstacle_.setSize(150, 150)
-                } else if (texture = 'plasticBag') {
-                    game.obstacle_.setSize(500, 500)
-                }
+                // animation
+                game.obstacle_.anims.play(game.obstacle_.texture)
 
                 // velocity
                 game.obstacle_.setVelocityY(100)
                 this.obstaclesGroup.add(game.obstacle_)
+
             },
             callbackScope: this,
             loop: true
         })
 
-        game.obstacle_ = this.add.sprite(game.config.width, game.config.height, this.texture)
+        // increase speed over time
+        this.time.addEvent({
+            delay: 1000,
+            callback: () => {
+                this.physics.world.gravity.y = this.physics.world.gravity.y + 5
+                //console.log('gravity is: ' + this.physics.world.gravity.y)
+            },
+            callbackScope: this,
+            loop: true
+        })
 // ---------------------------------------------------------------------------------- //
 
         // game active
@@ -154,7 +174,7 @@ class Play extends Phaser.Scene {
 // ---------------------------------- MOVE THINGS ---------------------------------- //
         // move background
         this.underwater.tilePositionY -= 7
-        //game.obstacle_.y += 4.5
+
         // Move each obstacle and remove it if off-screen
         this.obstaclesGroup.getChildren().forEach((obstacle) => {
             if (obstacle.y > this.game.config.height) {
@@ -163,54 +183,63 @@ class Play extends Phaser.Scene {
         })
 // --------------------------------------------------------------------------------- //
         
-// ----------------------------------- KEY BINDS ----------------------------------- //
+// --------------------------------- RESTART & MENU --------------------------------- //
         // R key to restart
         if(Phaser.Input.Keyboard.JustDown(keyRESTART)) {
-            // stop timer
-            this.time.removeEvent(game.timer)
-            // indicate restarting
-            this.restarting = this.add.sprite(game.config.width / 3 - 125, game.config.height / 2 - 400 , 'restarting').setOrigin(0,0)
-            this.restarting.anims.play('restarting')
-            // delay restart
-            let restartDelay = this.time.addEvent({
-                delay: 3000,
-                callback: () => {
-                    this.scene.restart()
-                }  
-            })
+            if(!this.gameOver) {
+                // stop timer
+                this.time.removeEvent(timer)
+                // indicate restarting
+                this.restarting = this.add.sprite(game.config.width / 3 - 125, game.config.height / 2 - 400 , 'restarting').setOrigin(0,0)
+                this.restarting.anims.play('restarting')
+                // delay restart
+                let restartDelay = this.time.addEvent({
+                    delay: 3000,
+                    callback: () => {
+                        this.scene.restart()
+                    }  
+                })
+            } else {
+                //console.log('new game')
+                this.scene.restart()
+            }
         }
         
         // M key for menu
         if(Phaser.Input.Keyboard.JustDown(keyMENU)) {
             this.scene.start('menuScene')
         }
-// --------------------------------------------------------------------------------- //
+// ---------------------------------------------------------------------------------- //
 
 // ----------------------------------- COLLISIONS ----------------------------------- //
-        this.obstaclesGroup.getChildren().forEach((obstacle) => {
-            this.physics.add.overlap(this.jellyfish, obstacle, () => {
-                console.log('Collision detected!');
-                // remove obstacle
-                this.obstaclesGroup.remove(obstacle, true, true); // Remove from group and destroy
+        // collisions true while not game over
+        if (!this.gameOver) {
+            this.obstaclesGroup.getChildren().forEach((obstacle) => {
+                this.physics.add.overlap(this.jellyfish, obstacle, () => {
+                    //console.log('Collision detected!')
+                    this.numLives -= 1
+                    this.livesCount.text = 'lives: ' + this.numLives
+                    // remove obstacle
+                    this.obstaclesGroup.remove(obstacle, true, true); // Remove from group and destroy
 
-                // text
-                this.ouch = this.add.text(this.jellyfish.x, this.jellyfish.y, 'OUCH :(')
+                    // text
+                    game.ouch = this.add.text(this.jellyfish.x + 100, this.jellyfish.y, 'OUCH :(')
 
-                game.timer = this.time.addEvent({
-                    delay: 1000,
-                    callback: () => {
-                        this.ouch.destroy()
-                    },
-                    callbackScope: this,
-                    loop: false
-                })
+                    game.timer = this.time.addEvent({
+                        delay: 1000,
+                        callback: () => {
+                            game.ouch.destroy()
+                        },
+                        callbackScope: this,
+                        loop: false
+                    })
 
-                // show impact on jellyfish
-                this.jellyfish.reset()
+                    // show impact on jellyfish
+                    this.jellyfish.reset()
 
-            }, null, this);
-        })
-
+                }, null, this);
+            })
+        }
     }
 // ---------------------------------------------------------------------------------- //
 

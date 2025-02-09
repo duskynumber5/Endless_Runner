@@ -1,6 +1,6 @@
 // Maddison Lobo
 // ENDLESS RUNNER
-// 9 hours
+// 13 hours
 
 // creative tilt justification
     // 
@@ -10,6 +10,9 @@ let config = {
     type: Phaser.AUTO,
     width: 1280,
     height: 960,
+    render: {
+        pixelArt: true
+    },
     physics: {
         default: 'arcade',
         arcade: {

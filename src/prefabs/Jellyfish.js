@@ -5,15 +5,16 @@ class Jellyfish extends Phaser.GameObjects.Sprite {
         // add object to existing scene
         scene.add.existing(this)   
         scene.physics.add.existing(this)  
-        
+    
         this.body.setCollideWorldBounds(true)
         this.moveSpeed = 7         // rocket speed in pixels/frame
 
-        this.body.setSize(200, 200)
+        this.body.setSize(200, 100).setOffset(10, 5)
     }
 
     update() {   
         this.body.setVelocity(0)
+        this.body.allowGravity = false
 
         // movement w/ boundaries
         if(keyLEFT.isDown && this.x >= borderUISize - this.width / 1.2) {
@@ -25,7 +26,7 @@ class Jellyfish extends Phaser.GameObjects.Sprite {
     }
     
     reset() {
-        this.setPosition(game.config.width / 2 - 125, game.config.height - game.config.height / 3); // Center horizontally, bottom of the screen
+        this.setPosition(game.config.width / 2 - 125, game.config.height - game.config.height / 3)
     }
 
 }
