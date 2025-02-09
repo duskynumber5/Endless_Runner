@@ -102,7 +102,7 @@ class Play extends Phaser.Scene {
 
         // timer
         this.time.addEvent({
-            delay: 2000,
+            delay: 1500,
             callback: () => {
                 let texture = ''
 
@@ -122,7 +122,13 @@ class Play extends Phaser.Scene {
 
                 // create obstacles
                 game.obstacle_ = this.physics.add.sprite(Phaser.Math.Between(-1, game.config.width), 0, texture)
-                //game.obstacle_.anims.play(this.texture)
+
+
+                if (texture = 'plastic1') {
+                    game.obstacle_.setSize(150, 150)
+                } else if (texture = 'plasticBag') {
+                    game.obstacle_.setSize(500, 500)
+                }
 
                 // velocity
                 game.obstacle_.setVelocityY(100)
@@ -180,13 +186,32 @@ class Play extends Phaser.Scene {
         }
 // --------------------------------------------------------------------------------- //
 
-/*
-        // collision
-        this.physics.add.collider(this.player, this.obstaclesGroup, (player, obstacle) => {
-            console.log('Collision detected!');
-            obstacle.destroy(); // Destroy the obstacle upon collision
-        });
-*/
+// ----------------------------------- COLLISIONS ----------------------------------- //
+        this.obstaclesGroup.getChildren().forEach((obstacle) => {
+            this.physics.add.overlap(this.jellyfish, obstacle, () => {
+                console.log('Collision detected!');
+                // remove obstacle
+                this.obstaclesGroup.remove(obstacle, true, true); // Remove from group and destroy
+
+                // text
+                this.ouch = this.add.text(this.jellyfish.x, this.jellyfish.y, 'OUCH :(')
+
+                game.timer = this.time.addEvent({
+                    delay: 1000,
+                    callback: () => {
+                        this.ouch.destroy()
+                    },
+                    callbackScope: this,
+                    loop: false
+                })
+
+                // show impact on jellyfish
+                this.jellyfish.reset()
+
+            }, null, this);
+        })
+
     }
+// ---------------------------------------------------------------------------------- //
 
 }
