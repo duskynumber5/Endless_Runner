@@ -142,6 +142,9 @@ class Play extends Phaser.Scene {
                 // velocity
                 game.obstacle_.setVelocityY(100)
                 this.obstaclesGroup.add(game.obstacle_)
+                game.sound.play('spawn', {
+                    instances: 1,
+                })
 
             },
             callbackScope: this,

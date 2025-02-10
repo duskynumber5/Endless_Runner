@@ -38,6 +38,7 @@ class Menu extends Phaser.Scene {
         this.load.audio('background', './assets/background.mp3')
         this.load.audio('hurt', './assets/hurt.wav')
         this.load.audio('select', './assets/select.wav')
+        this.load.audio('spawn', './assets/spawn.wav')
     }
 
     create() {
