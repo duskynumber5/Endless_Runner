@@ -189,6 +189,7 @@ class Play extends Phaser.Scene {
                 // stop timer
                 this.time.removeEvent(game.timer)
                 // indicate restarting
+                this.sound.play('select')
                 this.restarting = this.add.sprite(game.config.width / 3 - 125, game.config.height / 2 - 400 , 'restarting').setOrigin(0,0)
                 this.restarting.anims.play('restarting')
                 // delay restart
@@ -200,12 +201,14 @@ class Play extends Phaser.Scene {
                 })
             } else {
                 //console.log('new game')
+                this.sound.play('select')
                 this.scene.restart()
             }
         }
         
         // M key for menu
         if(Phaser.Input.Keyboard.JustDown(keyMENU)) {
+            this.sound.play('select')
             this.scene.start('menuScene')
         }
 // ---------------------------------------------------------------------------------- //

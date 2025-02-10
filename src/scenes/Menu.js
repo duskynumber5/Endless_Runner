@@ -37,6 +37,7 @@ class Menu extends Phaser.Scene {
         // load audio
         this.load.audio('background', './assets/background.mp3')
         this.load.audio('hurt', './assets/hurt.wav')
+        this.load.audio('select', './assets/select.wav')
     }
 
     create() {
@@ -67,7 +68,7 @@ class Menu extends Phaser.Scene {
             padding: {top: 5, bottom: 5},
         }
         // title text
-        this.add.text(game.config.width / 2 - 200, game.config.height / 4, 'JELLYFISH!', menuConfig).setOrigin(0,0)
+        this.add.text(game.config.width / 2 - 300, game.config.height / 4, 'JELLYFISH JUKE', menuConfig).setOrigin(0,0)
         
         menuConfig.fontSize = '40px'
         // start text
@@ -99,11 +100,13 @@ class Menu extends Phaser.Scene {
 // ----------------------------------- KEY BINDS ----------------------------------- //
         // up arrow to start game
         if (Phaser.Input.Keyboard.JustDown(keyUP)) {
+            this.sound.play('select')
             this.scene.start('playScene') 
         }
 
         // C for credits
         if (Phaser.Input.Keyboard.JustDown(keyCREDITS)) {
+            this.sound.play('select')
             this.scene.start('creditsScene') 
         }
 // ---------------------------------------------------------------------------------- //
