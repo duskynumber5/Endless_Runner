@@ -44,15 +44,14 @@ class Play extends Phaser.Scene {
                 if(this.numLives <= 0) {
                     this.time.removeEvent(gameTimer)
                     // game over scene
-                    if (!this.gameOver) {
-                        this.gameOver = true
-                        playConfig.fontSize = '40px'
-                        playConfig.backgroundColor = '#141b8e'
-                        this.add.text(game.config.width/2, game.config.height/2 - 64, ' GAME OVER ', playConfig).setOrigin(0.5)
-                        this.add.text(game.config.width/2, game.config.height/2, ' press R to restart or M for menu ', playConfig).setOrigin(0.5) 
-                        game.ouch.destroy()
-                        this.livesCount.text = 'lives: 0'
-                    }
+                    this.gameOver = true
+                    this.jellyfish.body.enable = false
+                    playConfig.fontSize = '40px'
+                    playConfig.backgroundColor = '#141b8e'
+                    this.add.text(game.config.width/2, game.config.height/2 - 64, ' GAME OVER ', playConfig).setOrigin(0.5)
+                    this.add.text(game.config.width/2, game.config.height/2, ' press R to restart or M for menu ', playConfig).setOrigin(0.5) 
+                    game.ouch.destroy()
+                    this.livesCount.text = 'lives: 0'
                 }
             },
             callbackScope: this,
@@ -224,6 +223,9 @@ class Play extends Phaser.Scene {
 
                     // text
                     game.ouch = this.add.text(this.jellyfish.x + 100, this.jellyfish.y, 'OUCH :(')
+                    this.sound.play('hurt', {
+                        volume: 0.25
+                    })
 
                     game.timer = this.time.addEvent({
                         delay: 1000,

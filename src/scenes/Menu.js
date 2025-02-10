@@ -36,6 +36,7 @@ class Menu extends Phaser.Scene {
         this.load.image('underwater', './assets/underwater.png')
         // load audio
         this.load.audio('background', './assets/background.mp3')
+        this.load.audio('hurt', './assets/hurt.wav')
     }
 
     create() {
