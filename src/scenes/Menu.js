@@ -34,9 +34,22 @@ class Menu extends Phaser.Scene {
         })
         // load background
         this.load.image('underwater', './assets/underwater.png')
+        // load audio
+        this.load.audio('background', './assets/background.mp3')
     }
 
     create() {
+// ------------------------------------- MUSIC ------------------------------------- //
+        this.background = this.sound.get('background')
+        if(!this.background) {
+                this.background = this.sound.add('background', {
+                loop: true,
+                volume: 0.5,
+            })
+            this.background.play()
+        }   
+// --------------------------------------------------------------------------------- //
+
 // ------------------------------------- DECOR ------------------------------------- //
         // decor lol
         this.add.rectangle(0, 0, game.config.width, game.config.height, 0x318bc0).setOrigin(0, 0)

@@ -33,7 +33,7 @@ class Play extends Phaser.Scene {
         playConfig.fontSize = '70px'
         this.timer = this.add.text(game.config.width / 2 - 25, game.config.height / 20 - 50, '0', playConfig).setOrigin(0,0)
         this.timeElapsed = 0
-        let timer = this.time.addEvent({
+        let gameTimer = this.time.addEvent({
             delay: 1000,
             callback: () => {
                 //console.log("Timer tick")
@@ -42,16 +42,16 @@ class Play extends Phaser.Scene {
 
                 // implement if collision max reached == game over
                 if(this.numLives <= 0) {
-                    this.time.removeEvent(timer)
+                    this.time.removeEvent(gameTimer)
                     // game over scene
                     if (!this.gameOver) {
                         this.gameOver = true
-                        this.livesCount.text = 'lives: 0'
                         playConfig.fontSize = '40px'
                         playConfig.backgroundColor = '#141b8e'
                         this.add.text(game.config.width/2, game.config.height/2 - 64, ' GAME OVER ', playConfig).setOrigin(0.5)
                         this.add.text(game.config.width/2, game.config.height/2, ' press R to restart or M for menu ', playConfig).setOrigin(0.5) 
                         game.ouch.destroy()
+                        this.livesCount.text = 'lives: 0'
                     }
                 }
             },
@@ -188,7 +188,7 @@ class Play extends Phaser.Scene {
         if(Phaser.Input.Keyboard.JustDown(keyRESTART)) {
             if(!this.gameOver) {
                 // stop timer
-                this.time.removeEvent(timer)
+                this.time.removeEvent(game.timer)
                 // indicate restarting
                 this.restarting = this.add.sprite(game.config.width / 3 - 125, game.config.height / 2 - 400 , 'restarting').setOrigin(0,0)
                 this.restarting.anims.play('restarting')
