@@ -25,6 +25,13 @@ class Menu extends Phaser.Scene {
             startFrame: 0,
             endFrame: 1,
         })
+        // load can
+        this.load.spritesheet('can', './assets/can.png', {
+            frameWidth: 224,
+            frameHeight: 224,
+            startFrame: 0,
+            endFrame: 3,
+        })
         // load restarting
         this.load.spritesheet('restarting', './assets/restarting.png', {
             frameWidth: 732,

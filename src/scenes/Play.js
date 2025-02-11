@@ -17,7 +17,7 @@ class Play extends Phaser.Scene {
             padding: {top: 5, bottom: 5},
         }
         // restart and menu option
-        this.add.text(game.config.width / 2 - 200, game.config.height - 50, 'press R to restart || press M for menu', playConfig).setOrigin(0,0)
+        this.keysText = this.add.text(game.config.width / 2 - 200, game.config.height - 50, 'press R to restart || press M for menu', playConfig).setOrigin(0,0)
 
         // lives tracker
         playConfig.fontSize = '40px'
@@ -45,6 +45,7 @@ class Play extends Phaser.Scene {
                     this.time.removeEvent(gameTimer)
                     // game over scene
                     this.gameOver = true
+                    this.keysText.text = ''
                     this.jellyfish.anims.stop('jellyfish!')
                     this.jellyfish.body.allowGravity = true
                     this.jellyfish.body.setVelocityY(25)
@@ -76,13 +77,20 @@ class Play extends Phaser.Scene {
             frameRate: 1,
             repeat: -1,
         })
-        
 
         // create plasticBag animation
         this.anims.create({
             key: 'plasticBag',
             frames: this.anims.generateFrameNumbers('plasticBag', { start: 0, end: 1, first: 0}),
             frameRate: 1,
+            repeat: -1,
+        })
+        
+        // create can animation
+        this.anims.create({
+            key: 'can',
+            frames: this.anims.generateFrameNumbers('can', { start: 0, end: 3, first: 0}),
+            frameRate: 2,
             repeat: -1,
         })
 
@@ -114,7 +122,7 @@ class Play extends Phaser.Scene {
             callback: () => {
                 let texture = ''
 
-                switch(Phaser.Math.Between(1, 2)) {
+                switch(Phaser.Math.Between(1, 3)) {
                     case 1:
                         //console.log('case 1')
                         texture = 'plastic1' 
@@ -122,6 +130,10 @@ class Play extends Phaser.Scene {
                     case 2:
                         //console.log('case 2')
                         texture = 'plasticBag'
+                        break
+                    case 3:
+                        //console.log('case 2')
+                        texture = 'can'
                         break
                     default:
                         //console.log('flop')
