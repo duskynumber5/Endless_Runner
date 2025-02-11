@@ -45,8 +45,10 @@ class Play extends Phaser.Scene {
                     this.time.removeEvent(gameTimer)
                     // game over scene
                     this.gameOver = true
-                    this.jellyfish.body.enable = false
                     this.jellyfish.anims.stop('jellyfish!')
+                    this.jellyfish.body.allowGravity = true
+                    this.jellyfish.body.setVelocityY(25)
+                    this.jellyfish.body.setCollideWorldBounds(false)
 
                     playConfig.fontSize = '40px'
                     playConfig.backgroundColor = '#141b8e'

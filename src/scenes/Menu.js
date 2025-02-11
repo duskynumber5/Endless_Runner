@@ -48,7 +48,7 @@ class Menu extends Phaser.Scene {
         if(!this.background) {
                 this.background = this.sound.add('background', {
                 loop: true,
-                volume: 0.5,
+                volume: 0.25,
             })
             this.background.play()
         }   
