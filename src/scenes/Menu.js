@@ -39,6 +39,7 @@ class Menu extends Phaser.Scene {
         this.load.audio('hurt', './assets/hurt.wav')
         this.load.audio('select', './assets/select.wav')
         this.load.audio('spawn', './assets/spawn.wav')
+        this.load.audio('gameOver', './assets/gameOver.wav')
     }
 
     create() {
@@ -57,6 +58,7 @@ class Menu extends Phaser.Scene {
         // decor lol
         this.add.rectangle(0, 0, game.config.width, game.config.height, 0x318bc0).setOrigin(0, 0)
         this.add.rectangle(0, borderUISize + borderPadding * 2, game.config.width, borderUISize, 0xFFFFFF).setOrigin(0, 0)
+        this.add.rectangle(0, game.config.height / 4, game.config.width, borderUISize + 50, 0x456378).setOrigin(0, 0)
 // --------------------------------------------------------------------------------- //
 
 // --------------------------------- TEXT & CONFIG --------------------------------- //
@@ -68,6 +70,7 @@ class Menu extends Phaser.Scene {
             align: 'left',
             padding: {top: 5, bottom: 5},
         }
+        
         // title text
         this.add.text(game.config.width / 2 - 300, game.config.height / 4, 'JELLYFISH JUKE', menuConfig).setOrigin(0,0)
         
@@ -81,7 +84,7 @@ class Menu extends Phaser.Scene {
         this.add.text(game.config.width / 2 - 107, game.config.height - 50, 'press C for credits', menuConfig).setOrigin(0,0)
         menuConfig.fontSize = '20px'
         // lifes text
-        this.add.text(game.config.width / 2 - 70, game.config.height / 1.75, 'you have 3 lives', menuConfig).setOrigin(0,0)
+        this.add.text(game.config.width / 3 + 10, game.config.height / 1.75, 'avoid all the trash and survive as long as you can!', menuConfig).setOrigin(0,0)
 // --------------------------------------------------------------------------------- //
 
 // ----------------------------------- KEY BINDS ----------------------------------- //
@@ -92,17 +95,32 @@ class Menu extends Phaser.Scene {
 
 // ----------------------------------- ADD SPRITE ----------------------------------- //
         // add jellyfish
-        let swim = this.add.sprite(game.config.width / 2 - 125, game.config.height - game.config.height / 3, 'jellyfish!').setOrigin(0,0)
+        this.jellyfish = new Jellyfish(this, game.config.width / 2 - 125, game.config.height - game.config.height / 3, 'jellyfish!').setOrigin(0,0)
+        // create animation
+        this.anims.create({
+            key: 'jellyfish!',
+            frames: this.anims.generateFrameNumbers('jellyfish!', { start: 0, end: 2, first: 0}),
+            frameRate: 3,
+            repeat: -1,
+        })
 // ---------------------------------------------------------------------------------- //
-
     }
 
     update() {
 // ----------------------------------- KEY BINDS ----------------------------------- //
         // up arrow to start game
         if (Phaser.Input.Keyboard.JustDown(keyUP)) {
+            this.time.addEvent({
+                delay: 2500,
+                callback: () => {
+                    this.scene.start('playScene') 
+                },
+                callbackScope: this,
+                loop: true
+            })
             this.sound.play('select')
-            this.scene.start('playScene') 
+            this.jellyfish.anims.play('jellyfish!')
+            this.jellyfish.menuSwim()
         }
 
         // C for credits

@@ -46,12 +46,15 @@ class Play extends Phaser.Scene {
                     // game over scene
                     this.gameOver = true
                     this.jellyfish.body.enable = false
+                    this.jellyfish.anims.stop('jellyfish!')
+
                     playConfig.fontSize = '40px'
                     playConfig.backgroundColor = '#141b8e'
-                    this.add.text(game.config.width/2, game.config.height/2 - 64, ' GAME OVER ', playConfig).setOrigin(0.5)
-                    this.add.text(game.config.width/2, game.config.height/2, ' press R to restart or M for menu ', playConfig).setOrigin(0.5) 
+                    this.gameOverText1 = this.add.text(game.config.width/2, game.config.height/2 - 64, ' GAME OVER ', playConfig).setOrigin(0.5)
+                    this.gameOverText2 = this.add.text(game.config.width/2, game.config.height/2, ' press R to restart or M for menu ', playConfig).setOrigin(0.5) 
                     game.ouch.destroy()
                     this.livesCount.text = 'lives: 0'
+                    this.sound.play('gameOver')
                 }
             },
             callbackScope: this,
@@ -60,13 +63,6 @@ class Play extends Phaser.Scene {
 // --------------------------------------------------------------------------------- //
 
 // ------------------------------ ANIMATION & SPRITES ------------------------------ //
-        // create animation
-        this.anims.create({
-            key: 'jellyfish!',
-            frames: this.anims.generateFrameNumbers('jellyfish!', { start: 0, end: 2, first: 0}),
-            frameRate: 3,
-            repeat: -1,
-        })
         // jellyfish & infinite animation
         this.jellyfish = new Jellyfish(this, game.config.width / 2 - 125, game.config.height - game.config.height / 3, 'jellyfish!').setOrigin(0,0)
         this.jellyfish.anims.play('jellyfish!')
@@ -142,10 +138,9 @@ class Play extends Phaser.Scene {
                 // velocity
                 game.obstacle_.setVelocityY(100)
                 this.obstaclesGroup.add(game.obstacle_)
-                game.sound.play('spawn', {
-                    instances: 1,
-                })
-
+                if(!this.gameOver) {    
+                    game.sound.play('spawn')
+                }
             },
             callbackScope: this,
             loop: true
@@ -155,8 +150,10 @@ class Play extends Phaser.Scene {
         this.time.addEvent({
             delay: 1000,
             callback: () => {
-                this.physics.world.gravity.y = this.physics.world.gravity.y + 5
-                //console.log('gravity is: ' + this.physics.world.gravity.y)
+                if(!this.gameOver) {
+                    this.physics.world.gravity.y = this.physics.world.gravity.y + 5
+                    //console.log('gravity is: ' + this.physics.world.gravity.y)
+                }
             },
             callbackScope: this,
             loop: true
@@ -175,11 +172,16 @@ class Play extends Phaser.Scene {
 
 // ---------------------------------- MOVE THINGS ---------------------------------- //
         // move background
-        this.underwater.tilePositionY -= 7
+        if(!this.gameOver) {
+            this.underwater.tilePositionY -= 7
+        }
+        if(this.gameOver) {
+            this.underwater.tilePositionY += 3
+        }
 
-        // Move each obstacle and remove it if off-screen
+        // Move each obstacle and remove it if-screen
         this.obstaclesGroup.getChildren().forEach((obstacle) => {
-            if (obstacle.y > this.game.config.height) {
+            if (obstacle.y > game.config.height) {
                 this.obstaclesGroup.remove(obstacle, true, true); // Remove from group and destroy
             }
         })
@@ -188,9 +190,10 @@ class Play extends Phaser.Scene {
 // --------------------------------- RESTART & MENU --------------------------------- //
         // R key to restart
         if(Phaser.Input.Keyboard.JustDown(keyRESTART)) {
-            if(!this.gameOver) {
                 // stop timer
                 this.time.removeEvent(game.timer)
+                this.gameOverText1.text = ''
+                this.gameOverText2.text = ''
                 // indicate restarting
                 this.sound.play('select')
                 this.restarting = this.add.sprite(game.config.width / 3 - 125, game.config.height / 2 - 400 , 'restarting').setOrigin(0,0)
@@ -202,11 +205,6 @@ class Play extends Phaser.Scene {
                         this.scene.restart()
                     }  
                 })
-            } else {
-                //console.log('new game')
-                this.sound.play('select')
-                this.scene.restart()
-            }
         }
         
         // M key for menu
